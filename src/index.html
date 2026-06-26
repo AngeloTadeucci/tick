@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>tick</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="volume" title="Alarm volume">
+        <button id="vol-icon" class="vol-icon" type="button" aria-label="Mute / unmute">
+          <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9zM16 7.5a5 5 0 0 1 0 9M18.5 5a8.5 8.5 0 0 1 0 14"/></svg>
+        </button>
+        <input id="vol" class="vol-slider" type="range" min="0" max="100" step="1" value="50"
+               aria-label="Alarm volume" />
+      </div>
+      <button id="add-btn" class="icon-btn" title="New timer (Ctrl+N)" aria-label="New timer">+</button>
+    </header>
+
+    <main>
+      <ul id="list" class="list"></ul>
+      <p id="empty" class="empty">No timers yet.<br /><span>Press <kbd>+</kbd> to add one.</span></p>
+    </main>
+
+    <!-- New / edit timer form -->
+    <div id="overlay" class="overlay hidden">
+      <form id="form" class="sheet">
+        <input id="f-name" class="f-name" type="text" placeholder="Timer name" maxlength="40" autocomplete="off" />
+        <div class="f-time">
+          <input id="f-h" type="number" min="0" max="99" placeholder="00" inputmode="numeric" /><span>h</span>
+          <input id="f-m" type="number" min="0" max="59" placeholder="00" inputmode="numeric" /><span>m</span>
+          <input id="f-s" type="number" min="0" max="59" placeholder="00" inputmode="numeric" /><span>s</span>
+        </div>
+        <div class="f-actions">
+          <button type="button" id="f-cancel" class="btn ghost">Cancel</button>
+          <button type="submit" class="btn primary">Save</button>
+        </div>
+      </form>
+    </div>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>
