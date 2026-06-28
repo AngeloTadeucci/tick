@@ -333,9 +333,22 @@ function revealWindow() {
   if (!w) return; // plain browser — nothing to show
   w.getCurrentWindow().show().catch(() => {});
 }
+// When launched at login (autostart), the Rust side flags this so we stay in the
+// tray instead of popping the window. Ask before revealing.
+async function startedHidden() {
+  try {
+    const core = window.__TAURI__ && window.__TAURI__.core;
+    return core ? await core.invoke("started_hidden") : false;
+  } catch {
+    return false;
+  }
+}
 if (window.__TAURI__) {
-  // wait two frames so the first paint has landed, then reveal
-  requestAnimationFrame(() => requestAnimationFrame(revealWindow));
-  // safety net so the window can never stay hidden if a frame never fires
-  setTimeout(revealWindow, 400);
+  startedHidden().then((hidden) => {
+    if (hidden) return; // login launch — leave it in the tray
+    // wait two frames so the first paint has landed, then reveal
+    requestAnimationFrame(() => requestAnimationFrame(revealWindow));
+    // safety net so the window can never stay hidden if a frame never fires
+    setTimeout(revealWindow, 400);
+  });
 }

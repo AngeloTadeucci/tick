@@ -115,7 +115,18 @@ place (see `bump-version.mjs`). Then commit and `pnpm build`.
   (no `VISIBLE` flag); `main.js` calls `getCurrentWindow().show()` after two animation
   frames (with a `setTimeout` safety net). This prevents the white-flash + reposition
   jump on launch. If you change startup/render logic, make sure `show()` still runs on
-  every path — otherwise the window stays invisible.
+  every path — otherwise the window stays invisible. **Exception:** when launched at
+  login, autostart passes `--autostart`; `lib.rs` exposes that via the `started_hidden`
+  command, and `main.js` skips the reveal so the app starts in the tray. Showing it
+  then happens from the tray ("Show Tick" / left-click), Rust-side.
+- **Closing the window hides it to the tray; it does not quit.** `lib.rs` intercepts
+  `CloseRequested` and calls `window.hide()` + `prevent_close()`, so timers and
+  notifications keep running in the background. The tray menu is the only real exit
+  ("Quit" → `app.exit(0)`); it also has "Show Tick" and a "Start at login" checkbox
+  wired to `tauri-plugin-autostart` (`ManagerExt::autolaunch()`). The tray needs the
+  `tray-icon` Cargo feature on the `tauri` crate. None of this needs ACL entries —
+  it's all Rust-side, and app-defined commands (`started_hidden`) are allowed by
+  default.
 - **Window size/position persist across launches** via `tauri-plugin-window-state`
   (registered in `lib.rs`). It saves on exit and restores on launch, so the `width`/
   `height` in `tauri.conf.json` only apply to the *first ever* launch; after that the
