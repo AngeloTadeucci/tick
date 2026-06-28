@@ -70,7 +70,7 @@ To add a Tauri plugin, all three steps are required:
 
 - The user-facing name is **Tick** (capitalized) — set via `productName` and the window
   `title` in `tauri.conf.json`. The Cargo package / binary is still `tick` (lowercase);
-  that's internal and not worth renaming. The bundle `identifier` is `com.atade.tick` and
+  that's internal and not worth renaming. The bundle `identifier` is `dev.tadeucci.tick` and
   must stay stable (it keys the app-data dir, so changing it orphans saved window state).
 - The icon source of truth is **`app-icon.svg`** (a stopwatch ring + checkmark on a dark
   squircle — the timer/"tick" pun). To regenerate every platform icon after editing it:
@@ -106,7 +106,7 @@ place (see `bump-version.mjs`). Then commit and `pnpm build`.
   attributed to "Windows PowerShell" (a fallback so they appear at all). To see the
   real "tick" name + icon you must run the app **installed via the generated installer**
   (`pnpm build` → `src-tauri/target/release/bundle/nsis|msi/` → launch from Start Menu);
-  the installer registers the AUMID (`com.atade.tick`) and a matching shortcut. There is
+  the installer registers the AUMID (`dev.tadeucci.tick`) and a matching shortcut. There is
   no override to fix the dev-mode attribution. Focus Assist / DnD also suppresses toasts.
 - **The window starts hidden and is revealed from JS after first paint.**
   `tauri.conf.json` sets `"visible": false`; `window-state` restores geometry only
