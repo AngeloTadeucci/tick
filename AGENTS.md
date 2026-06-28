@@ -90,6 +90,13 @@ pnpm build    # = tauri build → src-tauri/target/release/ + .../bundle/
   **recompile** — restart `pnpm dev`; the frontend hot-reload alone won't pick it up.
 - On Windows, use the `py` launcher for any Python, not `python3`.
 
+## Bumping the version
+
+The version is duplicated in four files (`package.json`, `src-tauri/tauri.conf.json`,
+`src-tauri/Cargo.toml`, and the `tick` entry in `src-tauri/Cargo.lock`). Don't edit them
+by hand — run `pnpm bump <x.y.z>` (e.g. `pnpm bump 0.1.2`), which updates all four in
+place (see `bump-version.mjs`). Then commit and `pnpm build`.
+
 ## Gotchas
 
 - **Notifications show the right app name/icon only in the *installed* build.** The
