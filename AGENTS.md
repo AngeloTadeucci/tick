@@ -97,7 +97,28 @@ pnpm build    # = tauri build → src-tauri/target/release/ + .../bundle/
 The version is duplicated in four files (`package.json`, `src-tauri/tauri.conf.json`,
 `src-tauri/Cargo.toml`, and the `tick` entry in `src-tauri/Cargo.lock`). Don't edit them
 by hand — run `pnpm bump <x.y.z>` (e.g. `pnpm bump 0.1.2`), which updates all four in
-place (see `bump-version.mjs`). Then commit and `pnpm build`.
+place (see `bump-version.mjs`). Then commit, and push a matching `v<x.y.z>` tag to cut
+a release (see below).
+
+## Releasing & auto-update
+
+- A push of a `v*` tag triggers `.github/workflows/release.yml`, which uses
+  `tauri-apps/tauri-action` to build (Windows), **sign**, and publish a GitHub Release
+  with the installers and the updater manifest (`latest.json`).
+- Release flow: `pnpm bump <x.y.z>` → commit → `git tag v<x.y.z>` → `git push origin
+  main v<x.y.z>`.
+- The app checks for updates on startup via `tauri-plugin-updater`
+  (`window.__TAURI__.updater.check()`); when one exists it shows the `#update-bar`
+  prompt, then `downloadAndInstall()` + `tauri_plugin_process` relaunch. The endpoint
+  is `releases/latest/download/latest.json` in `tauri.conf.json` under
+  `plugins.updater`.
+- **Signing keys:** the public key lives in `tauri.conf.json` (`plugins.updater.pubkey`);
+  the private key + password are GitHub repo secrets (`TAURI_SIGNING_PRIVATE_KEY`,
+  `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`). The private key is irreplaceable — losing it
+  means existing installs can never accept another update. Don't commit it.
+- **The updater endpoint needs a *public* repo.** `releases/latest/download/...` is only
+  reachable without auth when the repo is public; on a private repo the update check
+  fails silently (handled gracefully — no error shown).
 
 ## Gotchas
 

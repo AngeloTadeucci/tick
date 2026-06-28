@@ -325,6 +325,47 @@ document.addEventListener("keydown", (e) => {
 
 render();
 
+// ---------- auto-update ----------
+// On startup, ask the updater (GitHub Releases) if there's a newer version. If so,
+// surface a small banner; the user opts in to download + install + relaunch.
+const upd = window.__TAURI__ && window.__TAURI__.updater;
+const proc = window.__TAURI__ && window.__TAURI__.process;
+const updateBar = $("#update-bar");
+const updateMsg = $("#update-msg");
+let pendingUpdate = null;
+
+async function checkForUpdate() {
+  if (!upd) return; // plain browser, or updater not available
+  try {
+    const update = await upd.check();
+    if (!update) return; // already up to date
+    pendingUpdate = update;
+    updateMsg.textContent = `Update available — v${update.version}`;
+    updateBar.classList.remove("hidden");
+  } catch {
+    /* offline / no release yet — fail quiet */
+  }
+}
+
+async function installUpdate() {
+  if (!pendingUpdate) return;
+  const now = $("#update-now");
+  now.disabled = true;
+  updateMsg.textContent = "Downloading…";
+  try {
+    await pendingUpdate.downloadAndInstall();
+    updateMsg.textContent = "Restarting…";
+    if (proc) await proc.relaunch();
+  } catch {
+    updateMsg.textContent = "Update failed — try again later";
+    now.disabled = false;
+  }
+}
+
+$("#update-now").addEventListener("click", installUpdate);
+$("#update-later").addEventListener("click", () => updateBar.classList.add("hidden"));
+if (window.__TAURI__) checkForUpdate();
+
 // ---------- reveal window ----------
 // The window starts hidden (tauri.conf.json) so it never flashes white at the default
 // position before the saved geometry is restored. Show it only after the UI has painted.

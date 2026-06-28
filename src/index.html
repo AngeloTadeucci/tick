@@ -18,6 +18,15 @@
       <button id="add-btn" class="icon-btn" title="New timer (Ctrl+N)" aria-label="New timer">+</button>
     </header>
 
+    <!-- Auto-update prompt (shown only when an update is available) -->
+    <div id="update-bar" class="update-bar hidden">
+      <span id="update-msg">Update available</span>
+      <div class="update-actions">
+        <button id="update-now" class="btn primary" type="button">Install &amp; restart</button>
+        <button id="update-later" class="btn ghost" type="button">Later</button>
+      </div>
+    </div>
+
     <main>
       <ul id="list" class="list"></ul>
       <p id="empty" class="empty">No timers yet.<br /><span>Press <kbd>+</kbd> to add one.</span></p>

@@ -31,6 +31,15 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "createUpdaterArtifacts": true
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEIzOUJGMUJEQjM3NEMyODEKUldTQnduU3p2Zkdic3dSOXBCS0NmdTRjNGZWanVuQkR4UW8zMjVVaTVBcXd1WjFYdFRBTEVPNVoK",
+      "endpoints": [
+        "https://github.com/angelotadeucci/tick/releases/latest/download/latest.json"
+      ]
+    }
   }
 }

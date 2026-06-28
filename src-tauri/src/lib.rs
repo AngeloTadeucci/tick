@@ -35,6 +35,7 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_notification::init())
+        .plugin(tauri_plugin_process::init())
         // Autostart launches the app with --autostart so it can start hidden in the tray.
         .plugin(tauri_plugin_autostart::init(
             MacosLauncher::LaunchAgent,
@@ -51,6 +52,11 @@ pub fn run() {
         )
         .invoke_handler(tauri::generate_handler![started_hidden])
         .setup(|app| {
+            // Updater is desktop-only; register it once the app handle exists.
+            #[cfg(desktop)]
+            app.handle()
+                .plugin(tauri_plugin_updater::Builder::new().build())?;
+
             // Tray menu: show the window, toggle launch-at-login, or really quit.
             let show_i = MenuItem::with_id(app, "show", "Show Tick", true, None::<&str>)?;
             let autostart_i = CheckMenuItem::with_id(
