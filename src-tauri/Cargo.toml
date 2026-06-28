@@ -1,9 +1,11 @@
 [package]
 name = "tick"
 version = "0.1.1"
-description = "A Tauri App"
-authors = ["you"]
+description = "A small, fast countdown app — a compact list of named timers."
+authors = ["Ângelo Tadeucci"]
 edition = "2021"
+license = "MIT"
+repository = "https://github.com/angelotadeucci/tick"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

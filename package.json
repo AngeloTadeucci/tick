@@ -2,6 +2,14 @@
   "name": "tick",
   "private": true,
   "version": "0.1.1",
+  "description": "A small, fast countdown app — a compact list of named timers.",
+  "license": "MIT",
+  "author": "Ângelo Tadeucci",
+  "homepage": "https://github.com/angelotadeucci/tick",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angelotadeucci/tick.git"
+  },
   "type": "module",
   "scripts": {
     "dev": "tauri dev",
