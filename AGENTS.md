@@ -31,8 +31,10 @@ README.md             user-facing overview
 ## How it works (frontend)
 
 - State is an array of `Timer` objects (see the typedef at the top of `main.js`),
-  persisted to `localStorage` under `tick.timers.v1`. Running timers are paused on
-  reload (never restored mid-flight).
+  persisted to `localStorage` under `tick.timers.v1`. Running timers use an absolute
+  wall-clock `endAt`, so they survive a full close: on reload a timer still counting
+  down resumes seamlessly, and one that elapsed while the app was closed is shown as
+  done (with a best-effort catch-up notification once notifications init).
 - A single `setInterval(loop, 250)` drives **every** timer. `loop()` does cheap
   per-row text updates via `updateRow()`; `render()` rebuilds the whole list and is
   only called on structural changes (add/remove/start/pause/reset), not 4×/sec.

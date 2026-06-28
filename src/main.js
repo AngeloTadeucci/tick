@@ -6,6 +6,7 @@ const VOL_KEY = "tick.volume.v1"; // 0..100; 50 == previous fixed loudness
 
 /** @typedef {{id:string,name:string,duration:number,remaining:number,running:boolean,endAt:number|null,done:boolean}} Timer */
 
+let pendingCatchup = []; // timers that elapsed while the app was closed — notified after init
 /** @type {Timer[]} */
 let timers = load();
 let editingId = null; // id being edited, or null when creating
@@ -30,12 +31,18 @@ function load() {
   try {
     const raw = localStorage.getItem(STORE_KEY);
     if (!raw) return [];
-    return JSON.parse(raw).map((t) => ({
-      ...t,
-      // never restore mid-flight: pause on reload, keep elapsed remaining
-      running: false,
-      endAt: null,
-    }));
+    return JSON.parse(raw).map((t) => {
+      // endAt is an absolute wall-clock timestamp, so a running timer survives a
+      // full close: resume it if still in the future...
+      if (t.running && t.endAt && t.endAt - Date.now() > 0) return { ...t };
+      // ...otherwise it elapsed while we were closed — show it done, notify once ready.
+      if (t.running && t.endAt) {
+        const done = { ...t, running: false, endAt: null, remaining: 0, done: true };
+        pendingCatchup.push(done);
+        return done;
+      }
+      return { ...t, running: false, endAt: null }; // was paused — keep its remaining
+    });
   } catch {
     return [];
   }
@@ -120,6 +127,11 @@ async function initNotifications() {
   } catch {
     canNotify = false;
   }
+  flushCatchup(); // fire any "finished while away" notifications now that we can
+}
+function flushCatchup() {
+  for (const t of pendingCatchup) notifyDone(t);
+  pendingCatchup = [];
 }
 function notifyDone(t) {
   if (!canNotify || !notif) return;
@@ -136,13 +148,13 @@ function startTimer(t) {
   if (t.remaining <= 0) t.remaining = t.duration;
   t.running = true;
   t.done = false;
-  t.endAt = performance.now() + t.remaining * 1000;
+  t.endAt = Date.now() + t.remaining * 1000;
   save();
   render();
 }
 function pauseTimer(t) {
   if (!t.running) return;
-  t.remaining = Math.max(0, (t.endAt - performance.now()) / 1000);
+  t.remaining = Math.max(0, (t.endAt - Date.now()) / 1000);
   t.running = false;
   t.endAt = null;
   save();
@@ -176,7 +188,7 @@ function loop() {
   let dirty = false;
   for (const t of timers) {
     if (!t.running) continue;
-    const rem = (t.endAt - performance.now()) / 1000;
+    const rem = (t.endAt - Date.now()) / 1000;
     if (rem <= 0) {
       fire(t);
       dirty = true;
@@ -197,7 +209,7 @@ const ICON = {
 };
 
 function liveRemaining(t) {
-  return t.running ? Math.max(0, (t.endAt - performance.now()) / 1000) : t.remaining;
+  return t.running ? Math.max(0, (t.endAt - Date.now()) / 1000) : t.remaining;
 }
 
 function render() {
