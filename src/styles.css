@@ -99,7 +99,15 @@ body { display: flex; flex-direction: column; height: 100vh; }
 
 /* ---- list ---- */
 main { flex: 1 1 auto; overflow-y: auto; }
-.list { list-style: none; }
+/* responsive grid: a lone timer fills the width (auto-fit collapses empty
+   tracks); extra columns appear only once there's room for another timer */
+.list {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  column-gap: 10px;
+  align-content: start;
+}
 
 .row {
   display: flex;
