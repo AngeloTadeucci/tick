@@ -1,6 +1,6 @@
 [package]
 name = "tick"
-version = "0.2.0"
+version = "0.2.1"
 description = "A small, fast countdown app — a compact list of named timers."
 authors = ["Ângelo Tadeucci"]
 edition = "2021"
@@ -22,6 +22,7 @@ tauri-build = { version = "2", features = [] }
 [dependencies]
 tauri = { version = "2", features = ["tray-icon"] }
 tauri-plugin-opener = "2"
+tauri-plugin-single-instance = "2"
 tauri-plugin-notification = "2"
 tauri-plugin-window-state = "2"
 tauri-plugin-autostart = "2"

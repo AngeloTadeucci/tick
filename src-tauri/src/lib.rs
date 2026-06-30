@@ -33,6 +33,11 @@ pub fn run() {
     );
 
     tauri::Builder::default()
+        // Must be the FIRST plugin: when a second launch happens, this fires in the
+        // already-running instance and reveals its window instead of opening a new one.
+        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+            show_main(app);
+        }))
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_process::init())
