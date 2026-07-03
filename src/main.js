@@ -314,9 +314,20 @@ function clamp(v, max) {
   return Math.min(n, max);
 }
 
+// select the value on focus so a single click replaces it (keyboard tab too);
+// deferred so a real drag-select isn't clobbered by the programmatic select.
+for (const el of [fH, fM, fS]) {
+  el.addEventListener("focus", () => setTimeout(() => el.select(), 0));
+}
+
 $("#add-btn").addEventListener("click", () => openForm(null));
 $("#f-cancel").addEventListener("click", closeForm);
-overlay.addEventListener("click", (e) => { if (e.target === overlay) closeForm(); });
+// close only when the press *starts* on the backdrop — otherwise a text
+// selection that drags from an input and releases on the backdrop would
+// count as a backdrop click (click fires on the mousedown/up common ancestor).
+let downOnOverlay = false;
+overlay.addEventListener("mousedown", (e) => { downOnOverlay = e.target === overlay; });
+overlay.addEventListener("click", (e) => { if (e.target === overlay && downOnOverlay) closeForm(); });
 
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && !overlay.classList.contains("hidden")) closeForm();
